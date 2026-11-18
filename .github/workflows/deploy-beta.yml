@@ -24,6 +24,19 @@ jobs:
 
       - uses: ./.github/actions/setup-pnpm
 
+      - name: Get pnpm store directory
+        id: pnpm-store
+        shell: bash
+        run: echo "store_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.store_dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install SSH key
         uses: benoitchantre/setup-ssh-authentication-action@1.0.1
         with:
